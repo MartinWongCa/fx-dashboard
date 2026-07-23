@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MarketPulse</title>
+
+ 
+
+  <link href=https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap rel="stylesheet">
+
+  <script src=https://cdn.jsdelivr.net/npm/chart.js></script>
+
+ 
+
+  <style>
+
+    :root {
+
+      --bg:#050b14; --bg-2:#08111f; --panel:#0e1726; --panel-2:#111d31;
+
+      --text:#f8fafc; --muted:#94a3b8; --accent:#38bdf8; --accent-2:#60a5fa;
+
+      --green:#22c55e; --red:#ef4444; --yellow:#facc15; --orange:#fb923c;
+
+      --border:rgba(148,163,184,0.16); --shadow:rgba(0,0,0,0.38);
+
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",Segoe UI,Arial,sans-serif;}
+
+    body{min-height:100vh;background:radial-gradient(circle at top left,rgba(56,189,248,.13),transparent 34%),radial-gradient(circle at top right,rgba(96,165,250,.09),transparent 30%),linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text);overflow-x:hidden;}
+
+    .app{width:100%;min-height:100vh;}
+
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:linear-gradient(135deg,rgba(8,18,37,.98),rgba(15,47,87,.98));border-bottom:1px solid rgba(96,165,250,.35);box-shadow:0 12px 30px var(--shadow);position:sticky;top:0;z-index:20;}
+
+    .brand-block{display:flex;align-items:center;gap:12px;min-width:0;}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#031526;font-weight:900;box-shadow:0 8px 22px rgba(56,189,248,.28);flex:0 0 auto;}.brand{min-width:0;}.brand h1{font-size:28px;font-weight:900;letter-spacing:-.045em;line-height:1;}.brand p{margin-top:5px;font-size:12px;color:#cbd5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:720px;}
+
+    .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}.pill{background:rgba(15,23,42,.68);border:1px solid var(--border);padding:8px 11px;border-radius:999px;color:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap;}.status-live{display:inline-flex;align-items:center;gap:7px;}.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 14px rgba(34,197,94,.8);}.sound-toggle{border:1px solid rgba(56,189,248,.45);background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:900;font-size:11px;transition:.2s ease;}.sound-toggle:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(56,189,248,.25);}
+
+    .banner{background:linear-gradient(90deg,#facc15,#fb923c,#facc15);color:#111827;font-weight:900;overflow:hidden;white-space:nowrap;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.14);letter-spacing:.01em;font-size:13px;}.banner-track{display:inline-block;padding-left:100%;animation:ticker 45s linear infinite;}@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+
+    .layout{padding:18px 20px 24px;max-width:1700px;margin:0 auto;}.section-title{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;gap:10px;}.section-title h2{font-size:17px;letter-spacing:-.02em;}.section-title span{color:var(--muted);font-size:11px;}
+
+    .status-row{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:10px;margin-bottom:16px;}.metric-card{background:linear-gradient(180deg,rgba(14,23,38,.96),rgba(17,29,49,.96));border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 12px 26px var(--shadow);position:relative;overflow:hidden;min-width:0;}.metric-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(56,189,248,.08),transparent 45%);pointer-events:none;}.metric-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;position:relative;}.metric-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.trend-chip{font-size:10px;font-weight:900;padding:4px 6px;border-radius:999px;background:rgba(15,23,42,.72);border:1px solid var(--border);white-space:nowrap;}.metric-value{font-size:20px;font-weight:900;letter-spacing:-.03em;position:relative;}.metric-sub{margin-top:5px;font-size:10.5px;color:#cbd5e1;line-height:1.35;position:relative;}
+
+    .green{color:var(--green);}.red{color:var(--red);}.yellow{color:var(--yellow);}.accent{color:var(--accent);}.orange{color:var(--orange);}
+
+    .main-grid{display:grid;grid-template-columns:minmax(0,68%) minmax(300px,32%);gap:16px;align-items:start;}.card{background:rgba(14,23,38,.92);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:0 14px 30px var(--shadow);margin-bottom:16px;min-width:0;}.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px;}.card h2{font-size:17px;color:#e0f2fe;letter-spacing:-.025em;}.card-desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45;}.source-badge{font-size:10px;color:#bae6fd;border:1px solid rgba(56,189,248,.35);padding:6px 8px;border-radius:999px;white-space:nowrap;background:rgba(14,165,233,.08);font-weight:900;}
+
+    .mini-chart-box{height:160px;position:relative;}.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px;}.fx-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}.fx-tile{background:#0a1424;border:1px solid var(--border);border-radius:13px;padding:10px;min-width:0;}.fx-pair{color:#bae6fd;font-size:11px;font-weight:900;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.fx-rate{font-size:19px;font-weight:900;margin-top:4px;color:#f8fafc;}.fx-change{font-size:11px;font-weight:900;margin-top:3px;}.fx-date{font-size:9.5px;color:var(--muted);margin-top:3px;}
+
+    .fx-sparkline-box{height:48px;margin-top:8px;position:relative;}
+
+    .fx-sparkline-box canvas{width:100%!important;height:48px!important;display:block;}
+
+    .fx-trend-note{font-size:9.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+
+ 
+
+    .insight{background:linear-gradient(180deg,#13233a,#101d31);border-left:4px solid var(--accent);border-radius:13px;padding:12px;margin-bottom:10px;}.insight strong{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;color:#f8fafc;font-size:13px;}.insight p,.insight li{color:#cbd5e1;font-size:12px;line-height:1.5;}.insight ul{margin-left:16px;}.signal-box{display:grid;gap:8px;margin-top:10px;}.signal-item{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#0a1424;border:1px solid var(--border);padding:10px;border-radius:12px;font-size:12px;}.signal-item span:first-child{color:#dbeafe;font-weight:700;}.signal-item span:last-child{font-weight:900;}
+
+    .table{width:100%;border-collapse:collapse;overflow:hidden;}.table tr{border-bottom:1px solid rgba(148,163,184,.14);}.table th,.table td{padding:9px 6px;text-align:left;font-size:12px;}.table th{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:9.5px;font-weight:900;}.table td{color:#e2e8f0;}
+
+    .news-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;}.news-tabs{display:flex;flex-wrap:wrap;gap:7px;}.news-tab{border:1px solid var(--border);background:#0a1424;color:#cbd5e1;border-radius:999px;padding:7px 10px;font-size:10.5px;font-weight:900;cursor:pointer;transition:.18s ease;}.news-tab:hover{border-color:var(--accent);color:#e0f2fe;}.news-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#031526;border-color:var(--accent);box-shadow:0 8px 18px rgba(56,189,248,.20);}.news-count{font-size:10.5px;color:var(--muted);font-weight:800;white-space:nowrap;}
+
+    .news-category-badge{display:inline-flex;align-items:center;width:max-content;border:1px solid rgba(56,189,248,.35);color:#bae6fd;background:rgba(14,165,233,.08);border-radius:999px;padding:3px 7px;font-size:9.5px;font-weight:900;margin-top:7px;}
+
+    #newsContainer{max-height:440px;overflow-y:auto;padding-right:4px;}.news-card{border-left:4px solid var(--accent);background:#0a1424;border-radius:13px;padding:11px;margin-bottom:10px;border:1px solid var(--border);}.news-title{color:#f8fafc;font-size:12px;font-weight:900;line-height:1.35;}.news-meta{color:var(--muted);margin-top:5px;font-size:10.5px;font-weight:800;}.news-summary{color:#cbd5e1;font-size:11.5px;line-height:1.45;margin-top:6px;}
+
+    .sources{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;}.source-item{background:var(--panel-2);border:1px solid var(--border);padding:10px;border-radius:12px;color:#dbeafe;font-size:12px;font-weight:700;}.path-box{margin-top:12px;background:#08111f;border:1px dashed rgba(96,165,250,.45);color:#bae6fd;padding:11px;border-radius:12px;font-size:11px;overflow-wrap:anywhere;line-height:1.45;}.update-flash{animation:flashUpdate .8s ease;}@keyframes flashUpdate{0%{box-shadow:0 0 0 rgba(56,189,248,0);}50%{box-shadow:0 0 28px rgba(56,189,248,.35);}100%{box-shadow:0 14px 30px var(--shadow);}}.footer{color:var(--muted);font-size:11px;text-align:center;padding:18px;border-top:1px solid rgba(148,163,184,.15);line-height:1.5;}
+
+    @media(max-width:1440px){.main-grid{grid-template-columns:minmax(0,66%) minmax(280px,34%);gap:14px;}.status-row{grid-template-columns:repeat(6,minmax(100px,1fr));}.metric-value{font-size:18px;}.card{padding:14px;}.fx-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+    @media(max-width:1180px){.main-grid{grid-template-columns:1fr;}.status-row{grid-template-columns:repeat(3,1fr);}}
+
+    @media(max-width:760px){.topbar{flex-direction:column;align-items:flex-start;}.controls{justify-content:flex-start;}.status-row{grid-template-columns:1fr;}.mini-grid{grid-template-columns:1fr;}.sources{grid-template-columns:1fr;}.layout{padding:16px;}.brand h1{font-size:26px;}.fx-summary-grid{grid-template-columns:1fr;}.news-toolbar{align-items:flex-start;flex-direction:column;}.news-count{white-space:normal;}}
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar"><div class="brand-block"><div class="logo">MP</div><div class="brand"><h1 id="pageTitle">MarketPulse</h1><p>Rates, FX, Treasury curve, inflation signals and Wealth Intelligence commentary</p></div></div><div class="controls"><div class="pill status-live"><span class="live-dot"></span><span id="monitorStatus">Monitoring</span></div><div class="pill">Last Refresh: <span id="lastRefresh">--:--:--</span></div><div class="pill">Next Refresh: <span id="countdown">300</span>s</div><button id="soundToggle" class="sound-toggle">🔇 Sound OFF</button></div></header>
+
+    <section class="banner"><div class="banner-track" id="tickerRibbon">Loading MarketPulse market summary...</div></section>
+
+    <main class="layout">
+
+      <div class="section-title"><div><h2>Executive Market Dashboard</h2><span id="generatedInfo">Generated from marketData.js</span></div><span id="dashboardStatus">Ready</span></div>
+
+      <section class="status-row">
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">Fed Funds</div><div class="trend-chip accent">Policy</div></div><div class="metric-value accent" id="kpiFedFunds">--</div><div class="metric-sub">Short-rate backdrop</div></div>
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">2s10s Spread</div><div class="trend-chip green" id="kpi2s10sChip">Curve</div></div><div class="metric-value green" id="kpi2s10s">--</div><div class="metric-sub" id="kpi2s10sSub">Curve slope signal</div></div>
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">10Y Treasury</div><div class="trend-chip yellow">Duration</div></div><div class="metric-value yellow" id="kpi10y">--</div><div class="metric-sub">Duration sensitivity</div></div>
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">30Y Treasury</div><div class="trend-chip yellow">Long End</div></div><div class="metric-value yellow" id="kpi30y">--</div><div class="metric-sub">Term premium watch</div></div>
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">CPI YoY</div><div class="trend-chip orange">Inflation</div></div><div class="metric-value orange" id="kpiCpi">--</div><div class="metric-sub">Policy-relevant inflation</div></div>
+
+        <div class="metric-card"><div class="metric-top"><div class="metric-label">DXY</div><div class="trend-chip accent">USD</div></div><div class="metric-value accent" id="kpiDxy">--</div><div class="metric-sub">Broad dollar monitor</div></div>
+
+      </section>
+
+      <section class="main-grid">
+
+        <div>
+
+          <div class="card" id="fxCardPanel"><div class="card-header"><div><h2>FX Monitor</h2><div class="card-desc" id="fxSource">Current values from marketData.js. Daily comparison benchmark from Frankfurter.</div></div><div class="source-badge">FX</div></div><div class="fx-summary-grid" id="fxTiles"></div></div>
+
+          <div class="mini-grid"><div class="card"><div class="card-header"><div><h2>Yield Curve Snapshot</h2><div class="card-desc">Parsed from Macro data metrics.</div></div></div><div class="mini-chart-box"><canvas id="spreadChart"></canvas></div></div><div class="card"><div class="card-header"><div><h2>Macro Snapshot</h2><div class="card-desc">Treasury, CPI and DXY comparison.</div></div></div><div class="mini-chart-box"><canvas id="macroChart"></canvas></div></div></div>
+
+          <div class="card"><div class="card-header"><div><h2>Wealth Intelligence Brief</h2><div class="card-desc" id="briefSource">Generated from marketData.js</div></div><div class="source-badge">Brief</div></div><div id="brief"></div></div>
+
+        </div>
+
+        <aside>
+
+          <div class="card"><div class="card-header"><div><h2>Market Signal Summary</h2><div class="card-desc">Dynamic summary from MarketPulse inputs.</div></div><div class="source-badge">Signals</div></div><div class="signal-box" id="signalSummary"></div></div>
+
+          <div class="card"><div class="card-header"><div><h2>Market News</h2><div class="card-desc" id="newsSource">Loaded from marketData.js</div></div><div class="source-badge">Headlines</div></div><div class="news-toolbar"><div id="newsTabs" class="news-tabs"></div><div id="newsCount" class="news-count">0 articles</div></div><div id="newsContainer"></div></div>
+
+          <div class="card"><div class="card-header"><div><h2>Market Data Table</h2><div class="card-desc" id="macroSource">Loaded from marketData.js</div></div></div><table class="table"><thead><tr><th>Indicator</th><th>Value</th><th>Status</th></tr></thead><tbody id="macroTable"></tbody></table></div>
+
+          <div class="card"><div class="card-header"><div><h2>Sources Considered</h2><div class="card-desc">Source fields from marketData.js.</div></div></div><div class="sources" id="sourcesList"></div><div class="path-box">Architecture baseline: index.html = UI, dashboard.js = rendering logic, marketData.js = agent-generated data.</div></div>
+
+        </aside>
+
+      </section>
+
+    </main>
+
+    <footer class="footer">MarketPulse Intelligence Center | Auto-refresh every 5 minutes | Sound plays only when enabled by user.<br>Data model remains unchanged: marketData.js → dashboard.js → index.html.</footer>
+
+  </div>
+
+  <script src=marketData.js></script>
+
+  <script src=dashboard.js></script>
+
+</body>
+
+</html>
