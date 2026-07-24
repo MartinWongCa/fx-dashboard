@@ -1,5 +1,3 @@
-import { marketData } from "./marketData.js";
-
 
 
 const REFRESH_SECONDS = 300;
@@ -26,6 +24,28 @@ let selectedNewsCategory = "All";
 console.log("1. Imported data:", marketData); 
 
 window.marketData = marketData;
+
+// Create an initialization function to load data securely
+async function initDashboardData() {
+  try {
+    // Dynamically pull the file from the server
+    const module = await import("./marketData.js");
+    
+    // Explicitly map the data to the window object
+    window.marketData = module.marketData;
+    
+    console.log("SUCCESS: Data dynamically loaded into window:", window.marketData);
+    
+    // Call your rendering/dashboard display functions here
+    // renderMyDashboard(); 
+    
+  } catch (error) {
+    console.error("CRITICAL ERROR: Failed to parse marketData.js:", error);
+  }
+}
+
+// Execute the data fetch immediately when dashboard.js runs
+initDashboardData();
 
 function getMarketData() {
   // Checkpoint 2: Verify the window object holds the reference when called
