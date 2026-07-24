@@ -1,5 +1,6 @@
-import {marketData} from "./marketData.js";
-window.marketData = marketData;
+import { marketData } from "./marketData.js";
+
+
 
 const REFRESH_SECONDS = 300;
 
@@ -21,7 +22,16 @@ const fxTrendCharts = {};
 
 let selectedNewsCategory = "All";
 
- 
+ // Checkpoint 1: Verify the import successfully pulled the array
+console.log("1. Imported data:", marketData); 
+
+window.marketData = marketData;
+
+function getMarketData() {
+  // Checkpoint 2: Verify the window object holds the reference when called
+  console.log("2. Window data retrieved:", window.marketData);
+  return window.marketData || null;
+}
 
 function safeText(value) {
 
@@ -38,14 +48,6 @@ function safeText(value) {
         '"': "&quot;"
 
     }[ch]));
-
-}
-
- 
-
-function getMarketData() {
-
-    return window.marketData || null;
 
 }
 
