@@ -1,4 +1,4 @@
-export const window.marketData = [{
+export const marketData = [{
 
     title: "MACROPULSE - DAILY MARKET BRIEF",
 

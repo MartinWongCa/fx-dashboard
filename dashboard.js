@@ -1,4 +1,5 @@
-import {window.marketData} from "./marketData.js";
+import {marketData} from "./marketData.js";
+window.marketData = marketData;
 
 const REFRESH_SECONDS = 300;
 
