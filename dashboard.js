@@ -1,3 +1,5 @@
+import {window.marketData} from "./marketData.js";
+
 const REFRESH_SECONDS = 300;
 
 const FX_BASE = "USD";
