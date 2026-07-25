@@ -1,5 +1,3 @@
-
-
 const REFRESH_SECONDS = 300;
 
 const FX_BASE = "USD";
@@ -20,38 +18,7 @@ const fxTrendCharts = {};
 
 let selectedNewsCategory = "All";
 
- // Checkpoint 1: Verify the import successfully pulled the array
-console.log("1. Imported data:", marketData); 
-
-window.marketData = marketData;
-
-// Create an initialization function to load data securely
-async function initDashboardData() {
-  try {
-    // Dynamically pull the file from the server
-    const module = await import("./marketData.js");
-    
-    // Explicitly map the data to the window object
-    window.marketData = module.marketData;
-    
-    console.log("SUCCESS: Data dynamically loaded into window:", window.marketData);
-    
-    // Call your rendering/dashboard display functions here
-    // renderMyDashboard(); 
-    
-  } catch (error) {
-    console.error("CRITICAL ERROR: Failed to parse marketData.js:", error);
-  }
-}
-
-// Execute the data fetch immediately when dashboard.js runs
-initDashboardData();
-
-function getMarketData() {
-  // Checkpoint 2: Verify the window object holds the reference when called
-  console.log("2. Window data retrieved:", window.marketData);
-  return window.marketData || null;
-}
+ 
 
 function safeText(value) {
 
@@ -68,6 +35,14 @@ function safeText(value) {
         '"': "&quot;"
 
     }[ch]));
+
+}
+
+ 
+
+function getMarketData() {
+
+    return window.marketData || null;
 
 }
 
@@ -934,8 +909,11 @@ function startCountdown() {
         countdown -= 1;
 
         if (countdown <= 0) {
+ 
 
-            refreshDashboard();
+            //refreshDashboard();
+
+              window.location.href = window.location.pathname + '?t=' + Date.now();
 
             countdown = REFRESH_SECONDS;
 
