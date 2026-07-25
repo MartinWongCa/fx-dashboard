@@ -1,4 +1,4 @@
-export const marketData = [{
+window.marketData = {
 
     title: "MACROPULSE - DAILY MARKET BRIEF",
 
@@ -524,4 +524,4 @@ export const marketData = [{
 
     }
 
-}];
+};
